@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id   Int     @id @default(autoincrement())
+  email     String
+  password  String
+  full_name String
+  age       Int
+  avatar    String?
+
+  images  Image[]
+  save    Save[]
+  comment Comment[]
+
+  @@map("Users")
+}
+
+model Image {
+  img_id   Int    @id @default(autoincrement())
+  img_name String
+  img_url  String
+  img_desc String
+  user_id  Int
+
+  user    User      @relation(fields: [user_id], references: [user_id])
+  save    Save[]
+  comment Comment[]
+
+  @@map("Images")
+}
+
+model Save {
+  user_id Int
+  img_id  Int
+  date    DateTime
+
+  user User  @relation(fields: [user_id], references: [user_id])
+  img  Image @relation(fields: [img_id], references: [img_id])
+
+  @@id([user_id, img_id])
+  @@map("Saves")
+}
+
+model Comment {
+  cmt_id  Int      @id @default(autoincrement())
+  user_id Int
+  img_id  Int
+  date    DateTime
+  content String
+
+  user User  @relation(fields: [user_id], references: [user_id])
+  img  Image @relation(fields: [img_id], references: [img_id])
+
+  @@map("Comments")
+}
