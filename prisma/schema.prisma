@@ -14,12 +14,13 @@ datasource db {
 }
 
 model User {
-  user_id   Int     @id @default(autoincrement())
-  email     String
-  password  String
-  full_name String
-  age       Int
-  avatar    String?
+  user_id       Int     @id @default(autoincrement())
+  email         String
+  password      String
+  full_name     String
+  age           Int
+  avatar        String?
+  refresh_token String?
 
   images  Image[]
   save    Save[]
