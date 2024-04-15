@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy';
 import { ResponseModule } from './response/response.module';
 import { CustomGuardModule } from './custom-guard/custom-guard.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { CustomGuardModule } from './custom-guard/custom-guard.module';
     AuthModule,
     JwtModule.register({ global: true }),
     ResponseModule,
-    CustomGuardModule
+    CustomGuardModule,
+    ImageModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

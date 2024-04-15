@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { LoginDto, RegisterDto, TokenDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { hashSync, compareSync } from 'bcrypt'
@@ -115,7 +115,7 @@ export class AuthService {
             return this.response.create(201, 'Refresh successfully!', newAccessToken);
         } catch (error) {
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
-            throw error;
+            if (error.name === 'TokenExpiredError') throw new UnauthorizedException(this.response.create(401, 'LoginExpired'));
         }
 
     }
@@ -130,7 +130,7 @@ export class AuthService {
     createRefreshToken(payload: TokenDto) {
         return this.jwt.signAsync(payload, {
             secret: this.config.get('SECRET_REFRESH_KEY'),
-            expiresIn: '1d',
+            expiresIn: '25s',
         })
     }
 

@@ -21,6 +21,7 @@ export class AuthController {
         return this.authService.login(body);
     }
 
+    @HttpCode(201)
     @Post('refresh')
     @UseGuards(CustomGuardService)
     refresh(@Req() req: Request) {
