@@ -123,14 +123,14 @@ export class AuthService {
     createAccessToken(payload: TokenDto) {
         return this.jwt.signAsync(payload, {
             secret: this.config.get('SECRET_KEY'),
-            expiresIn: '20s',
+            expiresIn: '15m',
         })
     }
 
     createRefreshToken(payload: TokenDto) {
         return this.jwt.signAsync(payload, {
             secret: this.config.get('SECRET_REFRESH_KEY'),
-            expiresIn: '25s',
+            expiresIn: '30m',
         })
     }
 
