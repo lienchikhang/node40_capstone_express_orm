@@ -1,14 +1,18 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponseService } from 'src/response/response.service';
-import { CommentDto, IdefaultFilter } from './dto';
+import { CommentDto, IdefaultFilter, ImageDto } from './dto';
 import { equal } from 'assert';
+import { CompressImageService } from 'src/compress-image/compress-image.service';
+import { CloundinaryService } from 'src/cloundinary/cloundinary.service';
 
 @Injectable()
 export class ImageService {
     constructor(
         private response: ResponseService,
         private prisma: PrismaService,
+        private compressImage: CompressImageService,
+        private cloudinary: CloundinaryService,
     ) { }
 
     async getImages(qRecord: number = 0, qName: string) {
@@ -174,6 +178,78 @@ export class ImageService {
             if (!saveImages.length) return this.response.create(200, 'Get successfully', { data: saveImages })
 
             return this.response.create(200, 'Get successfully', { data: saveImages, lastRcd: saveImages[saveImages.length - 1].img.img_id })
+        } catch (error) {
+            console.log('error:: ', error);
+            if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
+        }
+    }
+
+    async deleteImageById(userId: number, imgId: number) {
+        try {
+            const deleted = await this.prisma.image.delete({
+                where: {
+                    user_id: userId,
+                    img_id: imgId,
+                }
+            })
+
+            return this.response.create(200, 'Delete successfully!', deleted);
+
+        } catch (error) {
+            console.log('error:: ', error);
+            if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
+        }
+    }
+
+    async createImage(userId: number, data: ImageDto) {
+        try {
+            const newImg = await this.prisma.image.create({
+                data: {
+                    user_id: userId,
+                    img_name: data.imgName,
+                    img_desc: data.imgDesc,
+                    img_url: data.imgUrl,
+                }
+            })
+
+            delete newImg.user_id;
+            delete newImg.img_id;
+
+            return this.response.create(201, 'Create successfully!', newImg);
+
+        } catch (error) {
+            console.log('error:: ', error);
+            if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
+        }
+    }
+
+    async uploadImage(file: Express.Multer.File, userId: number, imgId: number) {
+        try {
+
+            const isExistImg = await this.prisma.image.findUnique({
+                where: {
+                    img_id: imgId,
+                }
+            })
+
+            // if (isExistImg) throw new ConflictException(this.response.create(429, 'Image has already existed'));
+
+            await this.compressImage.compress(file.filename);
+            const imgs = await this.cloudinary.doUpload();
+
+            const uploadImage = await this.prisma.image.update({
+                data: {
+                    img_url: imgs[0]
+                },
+                where: {
+                    user_id: userId,
+                    img_id: imgId,
+                }
+            })
+
+            delete uploadImage.user_id;
+
+            return this.response.create(201, 'Upload successfully!', uploadImage);
         } catch (error) {
             console.log('error:: ', error);
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));

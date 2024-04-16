@@ -10,6 +10,8 @@ import { JwtStrategy } from './strategy';
 import { ResponseModule } from './response/response.module';
 import { CustomGuardModule } from './custom-guard/custom-guard.module';
 import { ImageModule } from './image/image.module';
+import { CompressImageModule } from './compress-image/compress-image.module';
+import { CloundinaryModule } from './cloundinary/cloundinary.module';
 
 @Module({
   imports: [
@@ -22,7 +24,9 @@ import { ImageModule } from './image/image.module';
     JwtModule.register({ global: true }),
     ResponseModule,
     CustomGuardModule,
-    ImageModule
+    ImageModule,
+    CompressImageModule,
+    CloundinaryModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

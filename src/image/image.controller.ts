@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ImageService } from './image.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { CommentDto, QImgDto } from './dto';
+import { CommentDto, ImageDto, QImgDto } from './dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('image')
 export class ImageController {
@@ -59,5 +60,37 @@ export class ImageController {
     @Query('qRecord') qRecord: number
   ) {
     return this.imageService.getSaveImagesByUserId(Number(req.user), qRecord && Number(qRecord));
+  }
+
+  @HttpCode(200)
+  @Delete('delete/:imgId')
+  @UseGuards(AuthGuard('jwt'))
+  deleteImageById(
+    @Param('imgId') imgId: number,
+    @Req() req: Request
+  ) {
+    return this.imageService.deleteImageById(Number(req.user), Number(imgId));
+  }
+
+  @HttpCode(201)
+  @Post('create')
+  @UseGuards(AuthGuard('jwt'))
+  createImage(
+    @Body() body: ImageDto,
+    @Req() req: Request,
+  ) {
+    return this.imageService.createImage(Number(req.user), body);
+  }
+
+  @HttpCode(201)
+  @Post('upload/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImage(
+    @Req() req: Request,
+    @Param('id') imgId: number,
+    @UploadedFile() uploadImg: Express.Multer.File
+  ) {
+    return this.imageService.uploadImage(uploadImg, Number(req.user), Number(imgId))
   }
 }
