@@ -1,5 +1,1 @@
-import { UserDto } from "./user.dto"
-
-export {
-    UserDto
-}
+export * from './user.dto'

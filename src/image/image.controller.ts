@@ -11,12 +11,14 @@ export class ImageController {
 
   @HttpCode(200)
   @Get('get-all')
+  @UseGuards(AuthGuard('jwt'))
   getImages(
     @Query('qRecord') qRecord: number,
-    @Query('qName') qName: string
+    @Query('qName') qName: string,
+    @Req() req: Request,
   ) {
     console.log({ qRecord, qName })
-    return this.imageService.getImages(qRecord && Number(qRecord), qName);
+    return this.imageService.getImages(qRecord && Number(qRecord), qName, Number(req.user));
   }
 
   @HttpCode(200)

@@ -15,13 +15,28 @@ export class ImageService {
         private cloudinary: CloundinaryService,
     ) { }
 
-    async getImages(qRecord: number = 0, qName: string) {
+    async getImages(qRecord: number = 0, qName: string, userId: number) {
         try {
             console.log('service:: ', { qRecord, qName })
+
+            //tìm những ảnh user đã luư
+            const savedImgs = await this.prisma.save.findMany({
+                select: {
+                    img_id: true,
+                },
+                where: {
+                    user_id: userId,
+                }
+            })
+
+            let saveImgs: number[] = savedImgs.map((img) => img.img_id);
+
+            // lọc những ảnh user chưa lưu và hiển thị
             let defaultFilter: IdefaultFilter = {
                 img_id: {
                     gt: qRecord,
-                }
+                    notIn: saveImgs,
+                },
             }
 
             if (qName) {
@@ -232,7 +247,7 @@ export class ImageService {
                 }
             })
 
-            // if (isExistImg) throw new ConflictException(this.response.create(429, 'Image has already existed'));
+            if (isExistImg) throw new ConflictException(this.response.create(429, 'Image has already existed'));
 
             await this.compressImage.compress(file.filename);
             const imgs = await this.cloudinary.doUpload();
@@ -253,6 +268,14 @@ export class ImageService {
         } catch (error) {
             console.log('error:: ', error);
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
+        }
+    }
+
+    async saveImage() {
+        try {
+
+        } catch (error) {
+            console.log('error:: ', error);
         }
     }
 }
