@@ -75,6 +75,16 @@ export class ImageController {
   }
 
   @HttpCode(201)
+  @Post('save/:id')
+  @UseGuards(AuthGuard('jwt'))
+  saveImage(
+    @Param('id') imdId: number,
+    @Req() req: Request,
+  ) {
+    return this.imageService.saveImage(Number(req.user), Number(imdId));
+  }
+
+  @HttpCode(201)
   @Post('create')
   @UseGuards(AuthGuard('jwt'))
   createImage(

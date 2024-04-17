@@ -201,6 +201,17 @@ export class ImageService {
 
     async deleteImageById(userId: number, imgId: number) {
         try {
+
+            //check image exist
+            const isExistImg = await this.prisma.image.findUnique({
+                where: {
+                    img_id: imgId,
+                }
+            })
+
+            if (!isExistImg) throw new NotFoundException(this.response.create(404, 'Image not found'));
+
+            //delete image
             const deleted = await this.prisma.image.delete({
                 where: {
                     user_id: userId,
@@ -271,11 +282,31 @@ export class ImageService {
         }
     }
 
-    async saveImage() {
+    async saveImage(userId: number, imgId: number) {
         try {
 
+            //check image exist
+            const isExistImg = await this.prisma.image.findUnique({
+                where: {
+                    img_id: imgId,
+                }
+            })
+
+            if (!isExistImg) throw new NotFoundException(this.response.create(404, 'Image not found'));
+
+            //save image
+            await this.prisma.save.create({
+                data: {
+                    user_id: userId,
+                    img_id: imgId,
+                    date: new Date(),
+                }
+            })
+
+            return this.response.create(201, 'Save successfully!');
         } catch (error) {
             console.log('error:: ', error);
+            if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
         }
     }
 }
