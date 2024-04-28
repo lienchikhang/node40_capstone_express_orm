@@ -84,7 +84,7 @@ export class AuthService {
                 }
             })
 
-            return this.response.create(200, 'Login successfully!', accessToken);
+            return this.response.create(200, 'Login successfully!', { accessToken, full_name: isExist.full_name, avatar: isExist.avatar });
         } catch (error) {
             console.log({ error })
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
@@ -114,6 +114,7 @@ export class AuthService {
 
             return this.response.create(201, 'Refresh successfully!', newAccessToken);
         } catch (error) {
+            console.log('error in auth ser', error)
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
             if (error.name === 'TokenExpiredError') throw new UnauthorizedException(this.response.create(401, 'LoginExpired'));
         }
@@ -123,14 +124,14 @@ export class AuthService {
     createAccessToken(payload: TokenDto) {
         return this.jwt.signAsync(payload, {
             secret: this.config.get('SECRET_KEY'),
-            expiresIn: '15m',
+            expiresIn: '20s',
         })
     }
 
     createRefreshToken(payload: TokenDto) {
         return this.jwt.signAsync(payload, {
             secret: this.config.get('SECRET_REFRESH_KEY'),
-            expiresIn: '30m',
+            expiresIn: '20m',
         })
     }
 

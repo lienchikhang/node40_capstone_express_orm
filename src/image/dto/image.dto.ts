@@ -24,8 +24,7 @@ export class CommentDto {
 }
 
 export class QImgDto {
-    @IsNotEmpty()
-    @IsNumber()
+    // @IsNotEmpty()
     qImg: number
 }
 

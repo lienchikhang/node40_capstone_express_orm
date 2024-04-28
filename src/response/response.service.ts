@@ -5,7 +5,7 @@ export class ResponseService {
     create(status: number, mess: string, content?: any) {
         return {
             status,
-            mess,
+            message: mess,
             content
         }
     }

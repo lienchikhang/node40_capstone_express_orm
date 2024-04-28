@@ -12,6 +12,8 @@ import { CustomGuardModule } from './custom-guard/custom-guard.module';
 import { ImageModule } from './image/image.module';
 import { CompressImageModule } from './compress-image/compress-image.module';
 import { CloundinaryModule } from './cloundinary/cloundinary.module';
+import { AuthCustomModule } from './auth-custom/auth-custom.module';
+import { CustomjwtModule } from './customjwt/customjwt.module';
 
 @Module({
   imports: [
@@ -26,7 +28,9 @@ import { CloundinaryModule } from './cloundinary/cloundinary.module';
     CustomGuardModule,
     ImageModule,
     CompressImageModule,
-    CloundinaryModule
+    CloundinaryModule,
+    AuthCustomModule,
+    CustomjwtModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { UserService } from './user.service';
 import { UserDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthCustomService } from 'src/auth-custom/auth-custom.service';
 
 @Controller('user')
 export class UserController {
@@ -12,7 +13,7 @@ export class UserController {
 
     @HttpCode(200)
     @Get('me')
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthCustomService)
     getInfo(
         @Req() req: Request,
     ) {

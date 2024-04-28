@@ -15,9 +15,9 @@ export class ImageService {
         private cloudinary: CloundinaryService,
     ) { }
 
-    async getImages(qRecord: number = 0, qName: string, userId: number) {
+    async getImages(page: number = 1, qName: string, userId: number) {
         try {
-            console.log('service:: ', { qRecord, qName })
+            console.log('service:: ', { page, qName, userId })
 
             //tìm những ảnh user đã luư
             const savedImgs = await this.prisma.save.findMany({
@@ -29,12 +29,13 @@ export class ImageService {
                 }
             })
 
+            console.log(savedImgs)
+
             let saveImgs: number[] = savedImgs.map((img) => img.img_id);
 
             // lọc những ảnh user chưa lưu và hiển thị
             let defaultFilter: IdefaultFilter = {
                 img_id: {
-                    gt: qRecord,
                     notIn: saveImgs,
                 },
             }
@@ -54,8 +55,10 @@ export class ImageService {
                     img_id: true,
                 },
                 where: defaultFilter,
-                take: 25,
+                take: 10,
+                skip: (page - 1) * 10
             })
+
 
             if (!images.length) return this.response.create(200, 'Get successfully!', { data: images });
 
@@ -78,6 +81,7 @@ export class ImageService {
                         select: {
                             user_id: true,
                             full_name: true,
+                            avatar: true,
                         },
                     },
                     comment: {
@@ -125,6 +129,9 @@ export class ImageService {
 
     async addComment(qImg: number, body: CommentDto, userId: number) {
         try {
+
+            console.log({ qImg, body, userId })
+
             const newComment = await this.prisma.comment.create({
                 data: {
                     user_id: userId,
@@ -134,9 +141,20 @@ export class ImageService {
                 }
             })
 
+            const user = await this.prisma.user.findUnique({
+                select: {
+                    full_name: true,
+                    avatar: true,
+                },
+                where: {
+                    user_id: newComment.user_id,
+                }
+            })
+
             delete newComment.user_id;
 
-            return this.response.create(201, 'Add successfully', newComment);
+
+            return this.response.create(201, 'Add successfully', { comment: { ...newComment, user } });
         } catch (error) {
             console.log('error:: ', error);
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
@@ -170,6 +188,7 @@ export class ImageService {
 
     async getSaveImagesByUserId(userId: number, qRecord: number = 0) {
         try {
+            console.log({ userId, qRecord })
             const saveImages = await this.prisma.save.findMany({
                 select: {
                     img: {

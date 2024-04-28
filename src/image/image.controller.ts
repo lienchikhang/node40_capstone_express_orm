@@ -1,46 +1,52 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpCode, Param, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ImageService } from './image.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { CommentDto, ImageDto, QImgDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthCustomService } from 'src/auth-custom/auth-custom.service';
 
 @Controller('image')
 export class ImageController {
-  constructor(private readonly imageService: ImageService) { }
+  constructor(
+    private readonly imageService: ImageService,
+  ) { }
 
   @HttpCode(200)
   @Get('get-all')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthCustomService)
   getImages(
-    @Query('qRecord') qRecord: number,
+    @Query('page') page: number,
     @Query('qName') qName: string,
     @Req() req: Request,
   ) {
-    console.log({ qRecord, qName })
-    return this.imageService.getImages(qRecord && Number(qRecord), qName, Number(req.user));
+
+    return this.imageService.getImages(page && Number(page), qName, Number(req.user));
   }
 
   @HttpCode(200)
   @Get('get-detail/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthCustomService)
   getImageById(
     @Param('id') pid: number,
     @Query('qCmt') qCmt: number,
     @Req() req: Request,
+    @Headers() header,
   ) {
+    console.log('header', header);
     console.log('req:: ', req.user)
     return this.imageService.getImageById(Number(pid), qCmt && Number(qCmt), Number(req.user));
   }
 
   @HttpCode(201)
-  @Post('add-comment')
-  @UseGuards(AuthGuard('jwt'))
+  @Post('add-comment/:qImg')
+  @UseGuards(AuthCustomService)
   addComment(
     @Body() body: CommentDto,
-    @Query('qImg') qImg: QImgDto,
+    @Param('qImg') qImg: QImgDto,
     @Req() req: Request,
   ) {
+    console.log({ qImg })
     return this.imageService.addComment(Number(qImg), body, Number(req.user));
   }
 
@@ -56,7 +62,7 @@ export class ImageController {
 
   @HttpCode(200)
   @Get('save')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthCustomService)
   getSaveImagesByUserId(
     @Req() req: Request,
     @Query('qRecord') qRecord: number
