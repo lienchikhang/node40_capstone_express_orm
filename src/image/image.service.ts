@@ -5,6 +5,7 @@ import { CommentDto, IdefaultFilter, ImageDto } from './dto';
 import { equal } from 'assert';
 import { CompressImageService } from 'src/compress-image/compress-image.service';
 import { CloundinaryService } from 'src/cloundinary/cloundinary.service';
+import { convert } from 'src/lib/convertSaveImage';
 
 @Injectable()
 export class ImageService {
@@ -59,10 +60,14 @@ export class ImageService {
                 skip: (page - 1) * 10
             })
 
+            const total = await this.prisma.image.count({
+                where: defaultFilter
+            })
+
 
             if (!images.length) return this.response.create(200, 'Get successfully!', { data: images });
 
-            return this.response.create(200, 'Get successfully!', { data: images, lastRcd: images[images.length - 1].img_id });
+            return this.response.create(200, 'Get successfully!', { data: images, totalPage: Math.ceil((total / 10)) });
 
         } catch (error) {
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
@@ -186,7 +191,7 @@ export class ImageService {
         }
     }
 
-    async getSaveImagesByUserId(userId: number, qRecord: number = 0) {
+    async getSaveImagesByUserId(userId: number, qRecord: number = 1) {
         try {
             console.log({ userId, qRecord })
             const saveImages = await this.prisma.save.findMany({
@@ -200,18 +205,20 @@ export class ImageService {
                 },
                 where: {
                     user_id: userId,
-                    img: {
-                        img_id: {
-                            gt: qRecord
-                        }
-                    }
                 },
-                take: 15,
+                take: 6,
+                skip: (qRecord - 1) * 6,
             })
 
-            if (!saveImages.length) return this.response.create(200, 'Get successfully', { data: saveImages })
+            const total = await this.prisma.save.count({
+                where: { user_id: userId, }
+            })
 
-            return this.response.create(200, 'Get successfully', { data: saveImages, lastRcd: saveImages[saveImages.length - 1].img.img_id })
+            const convertedImages = convert(saveImages)
+
+            if (!saveImages.length) return this.response.create(200, 'Get successfully', { data: convertedImages })
+
+            return this.response.create(200, 'Get successfully', { data: convertedImages, totalPage: Math.ceil((total / 6)) })
         } catch (error) {
             console.log('error:: ', error);
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));

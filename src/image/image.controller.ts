@@ -52,7 +52,7 @@ export class ImageController {
 
   @HttpCode(200)
   @Get('me')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthCustomService)
   getImagesByUserId(
     @Req() req: Request,
     @Query('qRecord') qRecord: number
