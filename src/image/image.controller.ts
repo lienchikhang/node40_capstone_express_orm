@@ -55,9 +55,9 @@ export class ImageController {
   @UseGuards(AuthCustomService)
   getImagesByUserId(
     @Req() req: Request,
-    @Query('qRecord') qRecord: number
+    @Query('page') page: number
   ) {
-    return this.imageService.getImagesByUserId(Number(req.user), qRecord && Number(qRecord));
+    return this.imageService.getImagesByUserId(Number(req.user), page && Number(page));
   }
 
   @HttpCode(200)
@@ -65,14 +65,14 @@ export class ImageController {
   @UseGuards(AuthCustomService)
   getSaveImagesByUserId(
     @Req() req: Request,
-    @Query('qRecord') qRecord: number
+    @Query('page') page: number
   ) {
-    return this.imageService.getSaveImagesByUserId(Number(req.user), qRecord && Number(qRecord));
+    return this.imageService.getSaveImagesByUserId(Number(req.user), page && Number(page));
   }
 
   @HttpCode(200)
   @Delete('delete/:imgId')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthCustomService)
   deleteImageById(
     @Param('imgId') imgId: number,
     @Req() req: Request
@@ -82,7 +82,7 @@ export class ImageController {
 
   @HttpCode(201)
   @Post('save/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthCustomService)
   saveImage(
     @Param('id') imdId: number,
     @Req() req: Request,
@@ -92,7 +92,7 @@ export class ImageController {
 
   @HttpCode(201)
   @Post('create')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthCustomService)
   createImage(
     @Body() body: ImageDto,
     @Req() req: Request,
@@ -102,7 +102,7 @@ export class ImageController {
 
   @HttpCode(201)
   @Post('upload/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthCustomService)
   @UseInterceptors(FileInterceptor('file'))
   uploadImage(
     @Req() req: Request,

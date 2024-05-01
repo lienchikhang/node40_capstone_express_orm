@@ -12,7 +12,7 @@ export class CustomGuardService extends AuthGuard('jwt') {
     }
     handleRequest(err, user, info: Error, context: ExecutionContext) {
         // Xử lý sau khi gọi tới strategy
-        console.log(info)
+        console.log({ info, user })
         if (info instanceof TokenExpiredError) {
             const token = this.extractTokenFromRequest(context);
             const payload = this.decodeToken(token)

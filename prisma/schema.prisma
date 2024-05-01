@@ -30,10 +30,10 @@ model User {
 }
 
 model Image {
-  img_id   Int    @id @default(autoincrement())
+  img_id   Int     @id @default(autoincrement())
   img_name String
-  img_url  String
-  img_desc String
+  img_url  String?
+  img_desc String?
   user_id  Int
 
   user    User      @relation(fields: [user_id], references: [user_id])

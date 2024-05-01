@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { PayloadDto, PayloadDto2 } from './dto/payload.dto';
 
 @Injectable()
 export class AuthService {
@@ -92,8 +93,11 @@ export class AuthService {
         }
     }
 
-    async refreshToken(payload) {
+    async refreshToken(payload: any) {
         try {
+
+            if (payload?.message == 'TokenIsGood') throw new BadRequestException(this.response.create(400, payload.message));
+
             const userId = Number(payload.userId);
 
             //check user exist
@@ -117,6 +121,7 @@ export class AuthService {
             console.log('error in auth ser', error)
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
             if (error.name === 'TokenExpiredError') throw new UnauthorizedException(this.response.create(401, 'LoginExpired'));
+            if (error.status === 400) throw new BadRequestException(this.response.create(400, payload.message));
         }
 
     }
@@ -124,14 +129,14 @@ export class AuthService {
     createAccessToken(payload: TokenDto) {
         return this.jwt.signAsync(payload, {
             secret: this.config.get('SECRET_KEY'),
-            expiresIn: '20s',
+            expiresIn: '15m',
         })
     }
 
     createRefreshToken(payload: TokenDto) {
         return this.jwt.signAsync(payload, {
             secret: this.config.get('SECRET_REFRESH_KEY'),
-            expiresIn: '20m',
+            expiresIn: '3h',
         })
     }
 

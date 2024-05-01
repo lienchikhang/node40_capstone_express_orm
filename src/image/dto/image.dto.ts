@@ -2,13 +2,10 @@ import { IsNotEmpty, IsNumber, IsString, isNotEmpty } from "class-validator";
 
 export class ImageDto {
     @IsNotEmpty()
-    imgName: string
+    title: string
 
-    @IsNotEmpty()
-    imgUrl: string
-
-    @IsNotEmpty()
-    imgDesc: string
+    @IsString()
+    desc: string
 }
 
 export interface IdefaultFilter {

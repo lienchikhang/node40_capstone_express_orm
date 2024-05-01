@@ -1,0 +1,374 @@
+{
+	"info": {
+		"_postman_id": "272ad4b7-4681-4a82-85ec-7695455935bf",
+		"name": "NODE40_CAPSTONE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "25217887"
+	},
+	"item": [
+		{
+			"name": "AUTH",
+			"item": [
+				{
+					"name": "REGISTER",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"chikhang13a18@gmail.com\",\n    \"password\": \"123456@Ll\",\n    \"fullName\": \"Khang chi lien\",\n    \"age\": 20\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{domain}}auth/register"
+					},
+					"response": []
+				},
+				{
+					"name": "LOGIN",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"chikhang19a18@gmail.com\",\n    \"password\": \"123456@Ll\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{domain}}auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "REFRESH TOKEN",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTcxNDU3Mzc0NCwiZXhwIjoxNzE0NTc0NjQ0fQ.t4ZuBf01En9DYyHpVeoM2tq_aT3aABwNiliXD_1Bmpg",
+								"type": "text"
+							}
+						],
+						"url": "{{domain}}auth/refresh"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "IMAGES",
+			"item": [
+				{
+					"name": "GET ALL IMAGES",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTcxNDU1MzMxMiwiZXhwIjoxNzE0NTU0MjEyfQ.yUARCGxL-kPcGtdvYjut9tAYjxLCqLhlEO4yTW_E-vI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}image/get-all?page=3",
+							"host": [
+								"{{domain}}image"
+							],
+							"path": [
+								"get-all"
+							],
+							"query": [
+								{
+									"key": "qName",
+									"value": "er",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET DETAIL IMAGE",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTcxMzE2MzE1OCwiZXhwIjoxNzEzMTY0MDU4fQ.HFMYTtOrjh8k4zsMc5bfN7Q3q_hiGAm4npHwZeIUnDk",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}image/get-detail/2?qCmt=3",
+							"host": [
+								"{{domain}}image"
+							],
+							"path": [
+								"get-detail",
+								"2"
+							],
+							"query": [
+								{
+									"key": "qCmt",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST COMMENT",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTcxMzE2MTk1NCwiZXhwIjoxNzEzMTYxOTc0fQ.84iP9pngRuRGGkaoppAJHg-JThnloApIx4Din9CNhkA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"Qua du luon\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}image/add-comment?qImg=d",
+							"host": [
+								"{{domain}}image"
+							],
+							"path": [
+								"add-comment"
+							],
+							"query": [
+								{
+									"key": "qImg",
+									"value": "d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET IMAGE BY USER ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTcxNDU1MzMxMiwiZXhwIjoxNzE0NTU0MjEyfQ.yUARCGxL-kPcGtdvYjut9tAYjxLCqLhlEO4yTW_E-vI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}image/me",
+							"host": [
+								"{{domain}}image"
+							],
+							"path": [
+								"me"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET SAVED IMAGE BY USERID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTcxNDU1MzMxMiwiZXhwIjoxNzE0NTU0MjEyfQ.yUARCGxL-kPcGtdvYjut9tAYjxLCqLhlEO4yTW_E-vI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}image/save?page=1",
+							"host": [
+								"{{domain}}image"
+							],
+							"path": [
+								"save"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE IMAGE",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTcxMzI3NTg2NywiZXhwIjoxNzEzMjc2NzY3fQ.YsYBkDwISPi1T6SjMw2cCbgoC09USEwRD-uuI7oxtFY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"imgName\": \"Eren Yeager\",\n    \"imgUrl\": \"https://i.pinimg.com/736x/06/f4/12/06f4126e27ed510e6c110d038222e7b3.jpg\",\n    \"imgDesc\": \"Picture of eren in AOT\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{domain}}image/create"
+					},
+					"response": []
+				},
+				{
+					"name": "UPLOAD IMAGE",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTcxMzI4MjIzNiwiZXhwIjoxNzEzMjgzMTM2fQ.keVqRJCUkFvV8a1c0-5yyaKa2Sll6uqzd1sAiJ0biMw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/lienchikhang777/Downloads/3-4638.png"
+								}
+							]
+						},
+						"url": "{{domain}}image/upload/4"
+					},
+					"response": []
+				},
+				{
+					"name": "SAVE IMAGE",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTcxMzM0NzExOSwiZXhwIjoxNzEzMzQ4MDE5fQ.91juApsXyOfu0Vy7yhYB1XzP2MMCXqvHHZicdEipASI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{domain}}image/save/4"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "USER",
+			"item": [
+				{
+					"name": "GET INFO USER",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTcxMzM0MDg2MSwiZXhwIjoxNzEzMzQxNzYxfQ.oJ6xQt4taE2UwYJlwPdc2SqTjeB2aus34gqUbvuaLgE",
+								"type": "text"
+							}
+						],
+						"url": "{{domain}}user/me"
+					},
+					"response": []
+				},
+				{
+					"name": "ADJUST INFO USER",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTcxMzM0Mjc1OCwiZXhwIjoxNzEzMzQzNjU4fQ.ULe1frC4Az-5IcKX3BJ31337QHweS1AmwfP1JCjMwrA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Alan Walker\",\n    \"age\": 24\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{domain}}user/adjust"
+					},
+					"response": []
+				},
+				{
+					"name": "ADJUST AVATAR",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTcxNDU1MzMxMiwiZXhwIjoxNzE0NTU0MjEyfQ.yUARCGxL-kPcGtdvYjut9tAYjxLCqLhlEO4yTW_E-vI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/lienchikhang777/Downloads/IMG_1333.JPG"
+								}
+							]
+						},
+						"url": "{{domain}}user/adjust-avatar"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -30,8 +30,6 @@ export class ImageService {
                 }
             })
 
-            console.log(savedImgs)
-
             let saveImgs: number[] = savedImgs.map((img) => img.img_id);
 
             // lọc những ảnh user chưa lưu và hiển thị
@@ -65,7 +63,7 @@ export class ImageService {
             })
 
 
-            if (!images.length) return this.response.create(200, 'Get successfully!', { data: images });
+            if (!images.length) return this.response.create(200, 'Get successfully!', { data: images, totalPage: 0 });
 
             return this.response.create(200, 'Get successfully!', { data: images, totalPage: Math.ceil((total / 10)) });
 
@@ -166,7 +164,7 @@ export class ImageService {
         }
     }
 
-    async getImagesByUserId(userId: number, qRecord: number = 0) {
+    async getImagesByUserId(userId: number, page: number = 1) {
         try {
             const images = await this.prisma.image.findMany({
                 select: {
@@ -175,25 +173,30 @@ export class ImageService {
                 },
                 where: {
                     user_id: userId,
-                    img_id: {
-                        gt: qRecord
-                    }
                 },
-                take: 25,
+                take: 10,
+                skip: (page - 1) * 10,
             })
+
+            const total = await this.prisma.image.count({
+                where: {
+                    user_id: userId,
+                },
+            })
+
 
             if (!images.length) return this.response.create(200, 'Get successfully!', { data: images })
 
-            return this.response.create(200, 'Get successfully!', { data: images, lastRcd: images[images.length - 1].img_id })
+            return this.response.create(200, 'Get successfully!', { data: images, totalPage: Math.ceil((total / 10)) })
         } catch (error) {
             console.log('error:: ', error);
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
         }
     }
 
-    async getSaveImagesByUserId(userId: number, qRecord: number = 1) {
+    async getSaveImagesByUserId(userId: number, page: number = 1) {
         try {
-            console.log({ userId, qRecord })
+            console.log({ userId, page })
             const saveImages = await this.prisma.save.findMany({
                 select: {
                     img: {
@@ -207,7 +210,7 @@ export class ImageService {
                     user_id: userId,
                 },
                 take: 6,
-                skip: (qRecord - 1) * 6,
+                skip: (page - 1) * 6,
             })
 
             const total = await this.prisma.save.count({
@@ -216,7 +219,7 @@ export class ImageService {
 
             const convertedImages = convert(saveImages)
 
-            if (!saveImages.length) return this.response.create(200, 'Get successfully', { data: convertedImages })
+            if (!saveImages.length) return this.response.create(200, 'Get successfully', { data: convertedImages, totalPage: 0 })
 
             return this.response.create(200, 'Get successfully', { data: convertedImages, totalPage: Math.ceil((total / 6)) })
         } catch (error) {
@@ -254,18 +257,17 @@ export class ImageService {
     }
 
     async createImage(userId: number, data: ImageDto) {
+        console.log('data send create', data)
         try {
             const newImg = await this.prisma.image.create({
                 data: {
                     user_id: userId,
-                    img_name: data.imgName,
-                    img_desc: data.imgDesc,
-                    img_url: data.imgUrl,
+                    img_name: data.title,
+                    img_desc: data.desc,
                 }
             })
 
             delete newImg.user_id;
-            delete newImg.img_id;
 
             return this.response.create(201, 'Create successfully!', newImg);
 
@@ -277,14 +279,14 @@ export class ImageService {
 
     async uploadImage(file: Express.Multer.File, userId: number, imgId: number) {
         try {
+            console.log({ file, userId, imgId });
+            // const isExistImg = await this.prisma.image.findUnique({
+            //     where: {
+            //         img_id: imgId,
+            //     }
+            // })
 
-            const isExistImg = await this.prisma.image.findUnique({
-                where: {
-                    img_id: imgId,
-                }
-            })
-
-            if (isExistImg) throw new ConflictException(this.response.create(429, 'Image has already existed'));
+            // if (isExistImg) throw new ConflictException(this.response.create(429, 'Image has already existed'));
 
             await this.compressImage.compress(file.filename);
             const imgs = await this.cloudinary.doUpload();
