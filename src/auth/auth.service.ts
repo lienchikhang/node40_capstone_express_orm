@@ -121,7 +121,7 @@ export class AuthService {
             console.log('error in auth ser', error)
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
             if (error.name === 'TokenExpiredError') throw new UnauthorizedException(this.response.create(401, 'LoginExpired'));
-            if (error.status === 400) throw new BadRequestException(this.response.create(400, payload.message));
+            if (error.status === 400) return this.response.create(200, payload.message);
         }
 
     }
