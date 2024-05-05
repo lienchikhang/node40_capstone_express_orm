@@ -67,7 +67,7 @@ export class UserService {
         try {
 
             await this.compressImage.compress(file.filename);
-            const image = await this.cloudinary.doUpload();
+            const image = await this.cloudinary.doUpload(file.filename);
 
             const newInfo = await this.prisma.user.update({
                 data: {

@@ -5,6 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { AuthCustomService } from 'src/auth-custom/auth-custom.service';
 import { CustomGuardService } from 'src/custom-guard/custom-guard.service';
+import { AuthCheckService } from 'src/auth-check/auth-check.service';
 
 @Controller('auth')
 export class AuthController {
@@ -28,5 +29,13 @@ export class AuthController {
     refresh(@Req() req: Request) {
         console.log('req.user', req.user);
         return this.authService.refreshToken(req.user);
+    }
+
+    @HttpCode(200)
+    @Post('check')
+    @UseGuards(AuthCheckService)
+    checkValid(@Req() req: Request) {
+        console.log('pass auth', req.user);
+        return true;
     }
 }

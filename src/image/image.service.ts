@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponseService } from 'src/response/response.service';
 import { CommentDto, IdefaultFilter, ImageDto } from './dto';
@@ -6,6 +6,8 @@ import { equal } from 'assert';
 import { CompressImageService } from 'src/compress-image/compress-image.service';
 import { CloundinaryService } from 'src/cloundinary/cloundinary.service';
 import { convert } from 'src/lib/convertSaveImage';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ImageService {
@@ -14,6 +16,7 @@ export class ImageService {
         private prisma: PrismaService,
         private compressImage: CompressImageService,
         private cloudinary: CloundinaryService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
     ) { }
 
     async getImages(page: number = 1, qName: string, userId: number) {
@@ -54,8 +57,8 @@ export class ImageService {
                     img_id: true,
                 },
                 where: defaultFilter,
-                take: 10,
-                skip: (page - 1) * 10
+                take: 15,
+                skip: (page - 1) * 15
             })
 
             const total = await this.prisma.image.count({
@@ -65,7 +68,7 @@ export class ImageService {
 
             if (!images.length) return this.response.create(200, 'Get successfully!', { data: images, totalPage: 0 });
 
-            return this.response.create(200, 'Get successfully!', { data: images, totalPage: Math.ceil((total / 10)) });
+            return this.response.create(200, 'Get successfully!', { data: images, totalPage: Math.ceil((total / 15)) });
 
         } catch (error) {
             if (error.status === 500) throw new InternalServerErrorException(this.response.create(500, 'Internal Server Error'));
@@ -75,11 +78,25 @@ export class ImageService {
     async getImageById(pid: number, qCmt: number = 0, userId: number) {
         try {
             console.log({ pid, qCmt })
+
+            const cache = await this.cacheManager.get('CACHE_DETAIL_PIN')
+
+            if (cache) {
+                console.log('data has cached')
+                const id = JSON.parse(cache as string).data.img_id;
+                if (pid == id) {
+                    return this.response.create(200, 'Get successfully', JSON.parse(cache as string));
+                }
+            }
+
+            console.log('first time in')
+
             const image = await this.prisma.image.findUnique({
                 select: {
                     img_url: true,
                     img_name: true,
                     img_desc: true,
+                    img_id: true,
                     user: {
                         select: {
                             user_id: true,
@@ -122,7 +139,12 @@ export class ImageService {
 
             if (save) isSaved = true;
 
-            if (!image.comment.length) return this.response.create(200, 'Get successfully', { data: image, isSaved });
+            if (!image.comment.length) {
+                this.cacheManager.set('CACHE_DETAIL_PIN', JSON.stringify({ data: image, isSaved }));
+                return this.response.create(200, 'Get successfully', { data: image, isSaved })
+            };
+
+            this.cacheManager.set('CACHE_DETAIL_PIN', JSON.stringify({ data: image, isSaved, lastCmt: image.comment[image.comment.length - 1].cmt_id }));
 
             return this.response.create(200, 'Get successfully', { data: image, isSaved, lastCmt: image.comment[image.comment.length - 1].cmt_id });
         } catch (error) {
@@ -156,6 +178,8 @@ export class ImageService {
 
             delete newComment.user_id;
 
+            this.cacheManager.del('CACHE_DETAIL_PIN');
+
 
             return this.response.create(201, 'Add successfully', { comment: { ...newComment, user } });
         } catch (error) {
@@ -174,8 +198,8 @@ export class ImageService {
                 where: {
                     user_id: userId,
                 },
-                take: 10,
-                skip: (page - 1) * 10,
+                take: 15,
+                skip: (page - 1) * 15,
             })
 
             const total = await this.prisma.image.count({
@@ -289,11 +313,14 @@ export class ImageService {
             // if (isExistImg) throw new ConflictException(this.response.create(429, 'Image has already existed'));
 
             await this.compressImage.compress(file.filename);
-            const imgs = await this.cloudinary.doUpload();
+            // console.log(file.filename)
+            const img = await this.cloudinary.doUpload(file.filename as string);
+
+            // console.log('image sau khi compress', imgs);
 
             const uploadImage = await this.prisma.image.update({
                 data: {
-                    img_url: imgs[0]
+                    img_url: img
                 },
                 where: {
                     user_id: userId,

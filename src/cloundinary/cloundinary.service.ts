@@ -17,17 +17,20 @@ cloudinary.config({
 
 @Injectable()
 export class CloundinaryService {
-    async doUpload() {
-        const imgs: string[] = [];
+    async doUpload(file: string) {
+        // const imgs: string[] = [];
+        console.log('file name in upload', file)
         try {
-            const files = fs.readdirSync(finalPath);
-            for (let file of files) {
-                const img = await this.cloudUpload(path.join(finalPath, file), file);
-                imgs.push(img.url);
-                fs.unlinkSync(path.join(finalPath, file))
-                fs.unlinkSync(path.join(tempPath, file))
-            }
-            return imgs;
+            // const files = fs.readdirSync(finalPath);
+            // console.log('files', files);
+            // for (let file of files) {
+            //     const img = await this.cloudUpload(path.join(finalPath, file), file);
+            //     imgs.push(img.url);
+            //     fs.unlinkSync(path.join(finalPath, file))
+            //     fs.unlinkSync(path.join(tempPath, file))
+            // }
+            const img = await this.cloudUpload(path.join(finalPath, file), file);
+            return img.url;
         } catch (error) {
             console.log('error in cloudinarySerivce', error);
         }
