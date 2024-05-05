@@ -14,6 +14,8 @@ import { CompressImageModule } from './compress-image/compress-image.module';
 import { CloundinaryModule } from './cloundinary/cloundinary.module';
 import { AuthCustomModule } from './auth-custom/auth-custom.module';
 import { CustomjwtModule } from './customjwt/customjwt.module';
+import { AuthCheckModule } from './auth-check/auth-check.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -31,6 +33,11 @@ import { CustomjwtModule } from './customjwt/customjwt.module';
     CloundinaryModule,
     AuthCustomModule,
     CustomjwtModule,
+    AuthCheckModule,
+    CacheModule.register({
+      ttl: 100000,
+      isGlobal: true,
+    })
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
