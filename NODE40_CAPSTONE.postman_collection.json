@@ -72,12 +72,12 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTcxNDU1MzMxMiwiZXhwIjoxNzE0NTU0MjEyfQ.yUARCGxL-kPcGtdvYjut9tAYjxLCqLhlEO4yTW_E-vI",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTcxNDg4NTE5NSwiZXhwIjoxNzE0ODg2MDk1fQ.-XAcoi6Uu4xD_yuFNR0rNNVN-MvbF8ADfRnNAw6QYgs",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{domain}}image/get-all?page=3",
+							"raw": "{{domain}}image/get-all?page=2&qName=te",
 							"host": [
 								"{{domain}}image"
 							],
@@ -86,13 +86,12 @@
 							],
 							"query": [
 								{
-									"key": "qName",
-									"value": "er",
-									"disabled": true
+									"key": "page",
+									"value": "2"
 								},
 								{
-									"key": "page",
-									"value": "3"
+									"key": "qName",
+									"value": "te"
 								}
 							]
 						}
@@ -239,7 +238,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"imgName\": \"Eren Yeager\",\n    \"imgUrl\": \"https://i.pinimg.com/736x/06/f4/12/06f4126e27ed510e6c110d038222e7b3.jpg\",\n    \"imgDesc\": \"Picture of eren in AOT\"\n}",
+							"raw": "{\n    \"title\": \"Eren Yeager\",\n    \"desc\": \"Picture of eren in AOT\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
